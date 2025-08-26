@@ -11,6 +11,9 @@
         box-shadow: 0 0 10px rgba(0,0,0,0.1);
         margin-bottom: 1.5rem;
     }
+    .buttons {
+        margin-top: 1rem;
+    }
 </style>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 {% endblock %}
@@ -29,6 +32,9 @@
             <button id="dislike-btn" class="btn btn-danger">👎 <span id="dislikes">{{ quote.dislikes }}</span></button>
             <a href="{% url 'quotes:add_quote' %}" class="btn btn-primary ms-auto">Добавить цитату</a>
         </div>
+        <div class="mt-3 text-end">
+            <a href="{% url 'quotes:random_quote' %}" class="btn btn-outline-secondary">Другая случайная цитата</a>
+        </div>
     </div>
 {% else %}
     <p class="text-center">Цитат пока нет.</p>
@@ -37,7 +43,9 @@
     </div>
 {% endif %}
 
-<p class="mt-3 text-center"><a href="{% url 'quotes:top_quotes' %}" class="btn btn-secondary">Топ-10 цитат</a></p>
+<p class="mt-3 text-center">
+    <a href="{% url 'quotes:top_quotes' %}" class="btn btn-secondary">Топ-10 цитат</a>
+</p>
 {% endblock %}
 
 {% block extra_js %}

@@ -4,47 +4,87 @@
 
 {% block extra_head %}
 <style>
-    .quotes-container {
-        background: #ffffff;
-        border-radius: 10px;
-        padding: 2rem;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    .quote-text {
-        font-size: 1.2rem;
-    }
-    .quote-source {
-        font-style: italic;
-        color: #6c757d;
-        margin-left: 0.5rem;
-    }
+.quotes-container {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.quote-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8f9fa;
+    margin-bottom: 1rem;
+    min-height: 100px;
+}
+.quote-number {
+    width: 40px;
+    text-align: center;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+.quote-content {
+    flex: 1 1 auto;
+    margin-right: 2rem;
+}
+.quote-text {
+    font-size: 1.25rem;
+    word-wrap: break-word;
+}
+.quote-source {
+    font-style: italic;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+.quote-stats {
+    flex-shrink: 0;
+    width: 80px;
+    text-align: center;
+    font-weight: bold;
+}
+.quote-stats span {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+ul.quote-list {
+    list-style: none;
+    padding-left: 0;
+}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="quotes-container">
-    <h1>Топ-10 цитат</h1>
+    <h1 class="mb-4 text-center">Топ-10 цитат</h1>
 
     {% if quotes %}
-    <ol class="list-group list-group-numbered mb-3">
+    <ul class="quote-list mb-3">
         {% for q in quotes %}
-        <li class="list-group-item d-flex justify-content-between align-items-start">
-            <div>
-                <span class="quote-text">"{{ q.text }}"</span>
-                <span class="quote-source">— {{ q.source }}</span>
+        <li class="quote-item">
+            <div class="quote-number">{{ forloop.counter }}</div>
+            <div class="quote-content">
+                <div class="quote-text">"{{ q.text }}"</div>
+                <div class="quote-source">— {{ q.source }}</div>
             </div>
-            <span class="badge bg-primary rounded-pill quote-badge">
-                👍 {{ q.likes }} | 👎 {{ q.dislikes }} | 👁 {{ q.views }}
-            </span>
+            <div class="quote-stats">
+                <span>👍 {{ q.likes }}</span>
+                <span>👎 {{ q.dislikes }}</span>
+                <span>👁 {{ q.views }}</span>
+            </div>
         </li>
         {% endfor %}
-    </ol>
+    </ul>
 
     <div class="text-center mt-3">
         <a href="{% url 'quotes:random_quote' %}" class="btn btn-secondary">Случайная цитата</a>
     </div>
     {% else %}
         <p class="text-center">Цитат пока нет.</p>
+        <div class="text-center mt-3">
+            <a href="{% url 'quotes:add_quote' %}" class="btn btn-primary">Добавить первую цитату</a>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
