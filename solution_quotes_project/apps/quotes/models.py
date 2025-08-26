@@ -1,6 +1,10 @@
 import random
 
 from django.core.exceptions import ValidationError
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
 from django.db import models
 
 
@@ -18,13 +22,23 @@ class Quote(models.Model):
     """Модель цитаты с уникальностью текста, лимитом по источнику и весом."""
 
     text = models.TextField(
-        unique=True, help_text="Уникальный текст цитаты"
+        unique=True,
+        help_text="Уникальный текст цитаты",
+        verbose_name="Текст цитаты",
     )
     source = models.CharField(
-        max_length=200, help_text="Источник цитаты"
+        max_length=200,
+        help_text="Источник цитаты",
+        verbose_name="Источник",
     )
     weight = models.PositiveIntegerField(
-        default=1, help_text="Чем выше, тем чаще будет показываться"
+        default=1,
+        help_text="Чем больше вес, тем чаще цитата будет выпадать (от 1 до 7)",
+        verbose_name="Вес цитаты",
+        validators=[
+            MinValueValidator(1, "Вес не может быть меньше 1"),
+            MaxValueValidator(7, "Вес не может быть больше 7"),
+        ],
     )
     likes = models.PositiveIntegerField(default=0, help_text="Лайки")
     dislikes = models.PositiveIntegerField(
@@ -57,7 +71,7 @@ class Quote(models.Model):
         return " ".join(text.strip().split())
 
     def clean(self):
-        """Валидирует цитату: уникальность текста, лимит по источнику, вес ≥ 1."""
+        """Валидирует цитату: повтор текста,лимит по источнику, вес ≥ 1."""
         self.text = self.normalize_text(self.text)
         self.source = self.normalize_text(self.source)
 

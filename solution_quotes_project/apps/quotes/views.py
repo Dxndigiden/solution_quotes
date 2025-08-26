@@ -1,7 +1,9 @@
+from django.contrib import messages
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
+from .forms import QuoteForm
 from .models import Quote
 
 
@@ -58,3 +60,22 @@ def like_quote(request: HttpRequest, quote_id: int):
 def dislike_quote(request: HttpRequest, quote_id: int):
     """Добавляем дизлайк цитате."""
     return _update_counter(request, quote_id, "dislikes")
+
+
+def add_quote_view(request):
+    """Страница добавления новой цитаты через веб-форму."""
+    if request.method == "POST":
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                messages.success(request, "Цитата успешно добавлена!")
+                form = (
+                    QuoteForm()
+                )  # очищаем форму после успешного сохранения
+            except Exception as e:
+                form.add_error(None, str(e))
+    else:
+        form = QuoteForm()
+
+    return render(request, "quotes/add_quote.html", {"form": form})

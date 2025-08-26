@@ -13,4 +13,5 @@ urlpatterns = [
         views.dislike_quote,
         name="dislike_quote",
     ),
+    path("add/", views.add_quote_view, name="add_quote"),
 ]
