@@ -29,15 +29,19 @@ class QuoteForm(forms.ModelForm):
                 }
             ),
             "weight": forms.NumberInput(
-                attrs={"min": 1, "class": "form-control"}
+                attrs={"min": 1, "max": 7, "class": "form-control"}
             ),
         }
 
     def clean_weight(self):
-        """Проверяет, что вес цитаты ≥ 1."""
+        """Проверяет, что вес цитаты в нужном диапазоне."""
         quote_weight = self.cleaned_data.get("weight")
         if quote_weight < 1:
             raise forms.ValidationError(
                 "Вес цитаты должен быть не меньше 1."
+            )
+        if quote_weight > 7:
+            raise forms.ValidationError(
+                "Вес цитаты должен быть не больше 7."
             )
         return quote_weight
