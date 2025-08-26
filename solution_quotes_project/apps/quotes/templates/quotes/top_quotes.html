@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Топ-10 цитат{% endblock %}
+
+{% block extra_head %}
+<style>
+    .quotes-container {
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 2rem;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .quote-text {
+        font-size: 1.2rem;
+    }
+    .quote-source {
+        font-style: italic;
+        color: #6c757d;
+        margin-left: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="quotes-container">
+    <h1>Топ-10 цитат</h1>
+
+    {% if quotes %}
+    <ol class="list-group list-group-numbered mb-3">
+        {% for q in quotes %}
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div>
+                <span class="quote-text">"{{ q.text }}"</span>
+                <span class="quote-source">— {{ q.source }}</span>
+            </div>
+            <span class="badge bg-primary rounded-pill quote-badge">
+                👍 {{ q.likes }} | 👎 {{ q.dislikes }} | 👁 {{ q.views }}
+            </span>
+        </li>
+        {% endfor %}
+    </ol>
+
+    <div class="text-center mt-3">
+        <a href="{% url 'quotes:random_quote' %}" class="btn btn-secondary">Случайная цитата</a>
+    </div>
+    {% else %}
+        <p class="text-center">Цитат пока нет.</p>
+    {% endif %}
+</div>
+{% endblock %}
