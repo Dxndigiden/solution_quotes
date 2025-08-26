@@ -41,6 +41,7 @@
 {% endblock %}
 
 {% block extra_js %}
+{% if quote %}
 <script>
     function ajaxVote(url, counterId) {
         $.ajax({
@@ -61,4 +62,5 @@
         ajaxVote("{% url 'quotes:dislike_quote' quote.id %}", "dislikes");
     });
 </script>
+{% endif %}
 {% endblock %}
