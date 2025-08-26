@@ -6,7 +6,8 @@ from apps.quotes.models import Quote
 
 @pytest.mark.django_db
 def test_random_quote_view(client):
-    """Проверяем, что случайная цитата возвращается корректно"""
+    """Проверяем, что случайная цитата возвращается корректно."""
+
     quote = Quote.objects.create(
         text="Hello World", source="Book", weight=1
     )
@@ -19,7 +20,8 @@ def test_random_quote_view(client):
 
 @pytest.mark.django_db
 def test_like_dislike_ajax(client):
-    """Проверяем лайк и дизлайк через AJAX"""
+    """Проверяем лайк и дизлайк через AJAX."""
+
     quote = Quote.objects.create(
         text="Vote Test", source="Book", weight=1
     )

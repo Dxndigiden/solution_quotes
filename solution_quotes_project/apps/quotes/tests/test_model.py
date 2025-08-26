@@ -6,7 +6,7 @@ from apps.quotes.models import Quote
 
 @pytest.mark.django_db
 def test_limit_citata_source():
-    """Проверка: у одного источника не больше 3 цитат"""
+    """Проверка: у одного источника не больше 3 цитат."""
     source_name = "ТестовыйИсточник"
     Quote.objects.create(
         text="Цитата 1", source=source_name, weight=1
@@ -37,7 +37,7 @@ def test_weight_must_be_at_least_one():
 
 @pytest.mark.django_db
 def test_text_normalization_and_unique_check():
-    """Проверка: нормализация текста и уникальность без учета пробелов и регистра"""
+    """Проверка: нормализация текста и уникальность."""
     Quote.objects.create(text="Привет Мир", source="Книга1", weight=1)
     duplicate_quote = Quote(
         text="  привет   мир  ", source="Книга2", weight=1

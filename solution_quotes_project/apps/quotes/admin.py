@@ -6,6 +6,8 @@ from .models import Quote
 
 @admin.register(Quote)
 class QuoteAdmin(admin.ModelAdmin):
+    """Админка для модели Quote"""
+
     list_display = (
         "short_text",
         "source",

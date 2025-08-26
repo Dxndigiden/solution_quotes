@@ -6,18 +6,23 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
+# Определяем окружение
+DJANGO_ENV = os.getenv("DJANGO_ENV", "development")
+DEBUG = DJANGO_ENV == "development"
+
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key")
-DEBUG = os.getenv("DJANGO_ENV", "development") == "development"
 
 ALLOWED_HOSTS = (
     ["*"]
-    if DEBUG
+    if DJANGO_ENV == "development"
     else os.getenv("DJANGO_ALLOWED_HOSTS", "example.com").split(",")
 )
+
 TIME_ZONE = os.getenv("TIME_ZONE", "Asia/Novosibirsk")
 USE_TZ = True
 LANGUAGE_CODE = "ru-ru"
 
+# Приложения
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -28,6 +33,7 @@ INSTALLED_APPS = [
     "apps.quotes.apps.QuotesConfig",
 ]
 
+# Middleware
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -41,6 +47,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
+# Шаблоны
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -57,27 +64,23 @@ TEMPLATES = [
     },
 ]
 
-DATABASES = {
-    "default": {
-        "ENGINE": (
-            "django.db.backends.sqlite3"
-            if DEBUG
-            else "django.db.backends.postgresql"
-        ),
-        "NAME": (
-            BASE_DIR / os.getenv("SQLITE_NAME", "db.sqlite3")
-            if DEBUG
-            else os.getenv("POSTGRES_DB")
-        ),
-        "USER": None if DEBUG else os.getenv("POSTGRES_USER"),
-        "PASSWORD": None if DEBUG else os.getenv("POSTGRES_PASSWORD"),
-        "HOST": (
-            None if DEBUG else os.getenv("POSTGRES_HOST", "localhost")
-        ),
-        "PORT": None if DEBUG else os.getenv("POSTGRES_PORT", "5432"),
+# База данных
+if DJANGO_ENV == "development":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / os.getenv("SQLITE_NAME", "db.sqlite3"),
+        }
     }
-}
+else:  # production
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / os.getenv("SQLITE_NAME", "db.sqlite3"),
+        }
+    }
 
+# Пароли
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -93,6 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Статика и медиа
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
@@ -100,6 +104,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Логирование
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -107,7 +112,8 @@ LOGGING = {
     "root": {"handlers": ["console"], "level": "INFO"},
 }
 
-if not DEBUG:
+# Безопасность для продакшн
+if DJANGO_ENV == "production":
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True

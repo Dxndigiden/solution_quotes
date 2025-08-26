@@ -11,6 +11,7 @@ from django.db import models
 class QuoteManager(models.Manager):
     def weighted_random(self):
         """Возвращает случайную цитату с учетом веса."""
+
         quotes = list(self.all())
         if not quotes:
             return None
@@ -68,14 +69,15 @@ class Quote(models.Model):
     @staticmethod
     def normalize_text(text: str) -> str:
         """Удаляет лишние пробелы и нормализует строку."""
+
         return " ".join(text.strip().split())
 
     def clean(self):
         """Валидирует цитату: повтор текста,лимит по источнику, вес ≥ 1."""
+
         self.text = self.normalize_text(self.text)
         self.source = self.normalize_text(self.source)
 
-        # Проверка уникальности текста (без учета регистра)
         qs = (
             Quote.objects.exclude(pk=self.pk)
             if self.pk
@@ -87,7 +89,6 @@ class Quote(models.Model):
         ):
             raise ValidationError({"text": "Такая цитата уже есть."})
 
-        # Проверка лимита цитат по источнику
         source_qs = Quote.objects.filter(source__iexact=self.source)
         if self.pk:
             source_qs = source_qs.exclude(pk=self.pk)
@@ -95,9 +96,6 @@ class Quote(models.Model):
             raise ValidationError(
                 {"source": "У этого источника уже есть 3 цитаты."}
             )
-
-        if self.weight < 1:
-            raise ValidationError({"weight": "Вес должен быть ≥ 1."})
 
     def save(self, *args, **kwargs):
         self.full_clean()
