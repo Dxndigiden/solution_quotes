@@ -1,5 +1,9 @@
 # Цитатник
 
+![Python](https://img.shields.io/badge/-Python-3776AB?style=flat&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/-Django-092E20?style=flat&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/-SQLite-003B57?style=flat&logo=sqlite&logoColor=white)
+
 **Цитатник** — веб-приложение для публикации, просмотра и оценки цитат. Пользователи могут:
 
 - Смотреть случайную цитату
