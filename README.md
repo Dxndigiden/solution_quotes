@@ -79,7 +79,7 @@ python manage.py runserver
 
 ## Доступ
 
-Приложение доступно онлайн: [https://dxndigiden.pythonanywhere.com/](тык)
+Приложение доступно онлайн: [тык](https://dxndigiden.pythonanywhere.com/)
 
 ---
 
