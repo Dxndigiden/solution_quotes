@@ -7,27 +7,24 @@ from django.db import models
 class QuoteManager(models.Manager):
     def weighted_random(self):
         """Возвращает случайную цитату с учетом веса."""
-        all_quotes = list(self.all())
-        if not all_quotes:
+        quotes = list(self.all())
+        if not quotes:
             return None
-
-        weights = [quote.weight for quote in all_quotes]
-        return random.choices(all_quotes, weights=weights, k=1)[0]
+        weights = [q.weight for q in quotes]
+        return random.choices(quotes, weights=weights, k=1)[0]
 
 
 class Quote(models.Model):
-    """Модель цитаты с уникальностью, лимитом по источнику и весом."""
+    """Модель цитаты с уникальностью текста, лимитом по источнику и весом."""
 
     text = models.TextField(
         unique=True, help_text="Уникальный текст цитаты"
     )
     source = models.CharField(
-        max_length=200,
-        help_text="Откуда цитата: фильм, книга и т.д.",
+        max_length=200, help_text="Источник цитаты"
     )
     weight = models.PositiveIntegerField(
-        default=1,
-        help_text="Чем выше, тем чаще будет показываться",
+        default=1, help_text="Чем выше, тем чаще будет показываться"
     )
     likes = models.PositiveIntegerField(default=0, help_text="Лайки")
     dislikes = models.PositiveIntegerField(
@@ -54,44 +51,39 @@ class Quote(models.Model):
     def __str__(self):
         return f"{self.text[:50]} — {self.source}"
 
+    @staticmethod
+    def normalize_text(text: str) -> str:
+        """Удаляет лишние пробелы и нормализует строку."""
+        return " ".join(text.strip().split())
+
     def clean(self):
-        """Валидирует уникальность (без учета пробелов и регистра),
-        лимит источника и вес ≥ 1."""
+        """Валидирует цитату: уникальность текста, лимит по источнику, вес ≥ 1."""
+        self.text = self.normalize_text(self.text)
+        self.source = self.normalize_text(self.source)
 
-        cleaned_text = " ".join(self.text.strip().split())
-        cleaned_source = self.source.strip()
-
-        # Проверка дубликатов с нормализацией текста
-        duplicates = (
+        # Проверка уникальности текста (без учета регистра)
+        qs = (
             Quote.objects.exclude(pk=self.pk)
             if self.pk
             else Quote.objects.all()
         )
-        for quote in duplicates:
-            quote_text_normalized = " ".join(
-                quote.text.strip().split()
-            )
-            if quote_text_normalized.lower() == cleaned_text.lower():
-                raise ValidationError(
-                    {"text": "Такая цитата уже есть."}
-                )
+        if any(
+            self.normalize_text(q.text).lower() == self.text.lower()
+            for q in qs
+        ):
+            raise ValidationError({"text": "Такая цитата уже есть."})
 
         # Проверка лимита цитат по источнику
-        source_quotes = Quote.objects.filter(
-            source__iexact=cleaned_source
-        )
+        source_qs = Quote.objects.filter(source__iexact=self.source)
         if self.pk:
-            source_quotes = source_quotes.exclude(pk=self.pk)
-        if source_quotes.count() >= 3:
+            source_qs = source_qs.exclude(pk=self.pk)
+        if source_qs.count() >= 3:
             raise ValidationError(
                 {"source": "У этого источника уже есть 3 цитаты."}
             )
 
         if self.weight < 1:
             raise ValidationError({"weight": "Вес должен быть ≥ 1."})
-
-        self.text = cleaned_text
-        self.source = cleaned_source
 
     def save(self, *args, **kwargs):
         self.full_clean()
